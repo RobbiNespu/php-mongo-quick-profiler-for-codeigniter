@@ -55,17 +55,19 @@ class pqp_pi
     static function gen_pqp_db_results()
     {
         $CI = get_instance();
-    
+
         $db_obj = new stdClass();
         $db_obj->queries = array();
         $db_obj->queryCount = 0;
+        $db_obj->mongo_queries = array();
+        $db_obj->mongo_queryCount = 0;
     
         $dbs = array();
+        $mongos = array();
 	
     	if (isset($CI->write_db)) {
     	    unset($CI->write_db);
     	}
-
     	// Let's determine which databases are currently connected to
     	foreach (get_object_vars($CI) as $CI_object)
     	{
@@ -73,27 +75,41 @@ class pqp_pi
     		{
     			$dbs[] = $CI_object;
     		}
-    	}
-	
-    	if (count($dbs) == 0) {
-    	    return $db_obj;
+            if (is_object($CI_object) && get_class($CI_object) == 'Mongo_db')
+            {
+                $mongos[] = $CI_object;
+            }
     	}
     
-        foreach ($dbs as $db)
-    	{
-    	    $db_obj->queryCount += count($db->queries);
-	    
-    	    foreach ($db->queries as $key => $val)
-    		{					
-    			$time = number_format($db->query_times[$key], 4);
+        if(count($dbs) > 0)
+        {
+            foreach ($dbs as $db)
+            {
+                $db_obj->queryCount += count($db->queries);
+            
+                foreach ($db->queries as $key => $val)
+                {                   
+                    $time = number_format($db->query_times[$key], 4);
 
-    			$query = array(
-        				'sql' => $val,
-        				'time' => $time
-        			);
-        		array_push($db_obj->queries, $query);
-    		}
-    	}
+                    $query = array(
+                            'sql' => $val,
+                            'time' => $time
+                        );
+                    array_push($db_obj->queries, $query);
+                }
+            }
+        }
+
+        if(count($mongos) > 0)
+        {
+            foreach ($mongos as $mongo)
+            {
+                $db_obj->mongo_queryCount += count($mongo->benchmark);
+                $db_obj->mongo_queries = $mongo->benchmark;
+                
+            }
+        }
+        
     	return $db_obj;
     }
 

@@ -153,6 +153,29 @@ class PhpQuickProfiler {
 		return $query;
 	}
 	
+	/*--------------------------------------------------------
+	     Mongo DATA -- DATABASE OBJECT WITH LOGGING REQUIRED
+	----------------------------------------------------------*/
+	
+	public function gatherMongoData() {
+		$queryTotals = array();
+		$queryTotals['count'] = 0;
+		$queryTotals['time'] = 0;
+		$queries = array();
+		if($this->db != '') {
+			$queryTotals['count'] += $this->db->mongo_queryCount;
+			foreach($this->db->mongo_queries as $key => $query) {
+				$queryTotals['time'] += $query['benchmark']['millis'];
+				$query['time'] = $query['benchmark']['millis'];
+				$queries[] = $query;
+			}
+		}
+		
+		$this->output['mongo_queries'] = $queries;
+		$this->output['mongo_queryTotals'] = $queryTotals;
+		unset($queryTotals, $queries);
+	}
+
 	/*-------------------------------------------
 	     SPEED DATA FOR ENTIRE PAGE LOAD
 	-------------------------------------------*/
@@ -218,6 +241,7 @@ class PhpQuickProfiler {
 		$this->gatherMemoryData();
 		$this->gatherQueryData();
 		$this->gatherSpeedData();
+		$this->gatherMongoData();
 		//require_once($_SERVER['DOCUMENT_ROOT'].$this->config.'display.php');
 		require_once dirname(__FILE__) . '/../display.php';
 		

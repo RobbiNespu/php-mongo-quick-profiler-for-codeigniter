@@ -47,6 +47,7 @@ echo <<<JAVASCRIPT
 		removeClassName(pQp, 'queries');
 		removeClassName(pQp, 'memory');
 		removeClassName(pQp, 'files');
+		removeClassName(pQp, 'mongo');
 	}
 	
 	function toggleDetails(){
@@ -143,6 +144,7 @@ $logCount = isset($output['logs']['console']) ? count($output['logs']['console']
 $fileCount = count($output['files']);
 $memoryUsed = $output['memoryTotals']['used'];
 $queryCount = $output['queryTotals']['count'];
+$MongoqueryCount = $output['mongo_queryTotals']['count'];
 $speedTotal = $output['speedTotals']['total'];
 
 echo <<<PQPTABS
@@ -160,6 +162,10 @@ echo <<<PQPTABS
 	<td class="purple" onclick="changeTab('queries');">
 		<var>$queryCount Queries</var>
 		<h4>Database</h4>
+	</td>
+	<td class="pink" onclick="changeTab('mongo');">
+		<var>$MongoqueryCount Queries</var>
+		<h4>MongoDB</h4>
 	</td>
 	<td class="orange" onclick="changeTab('memory');">
 		<var>$memoryUsed</var>
@@ -274,6 +280,41 @@ else {
 						Speed: <b>'.$query['time'].'</b>
 					</em>';
 			}
+			echo '</td></tr>';
+			if($class == '') $class = 'alt';
+			else $class = '';
+		}
+			
+		echo '</table>';
+}
+
+echo '</div>';
+
+echo '<div id="pqp-mongo" class="pqp-box">';
+
+if($output['mongo_queryTotals']['count'] ==  0) {
+	echo '<h3>This panel has no log items.</h3>';
+}
+else {
+	echo '<table class="side" cellspacing="0">
+		  <tr><td><var>'.$output['mongo_queryTotals']['count'].'</var><h4>Total Queries</h4></td></tr>
+		  <tr><td class="alt"><var>'.$output['mongo_queryTotals']['time'].' millis</var> <h4>Total Time</h4></td></tr>
+		 </table>
+		<table class="main" cellspacing="0">';
+		
+		$class = '';
+		foreach($output['mongo_queries'] as $query) {
+			echo '<tr>
+				<td class="'.$class.'">'.
+				"Operation : ";
+				print_r($query['query']);
+					echo '<em> Collection: <b>'.$query['query']['collection'].'</b> &middot;';
+					echo ' Is Multi Key: <b>';
+					echo ($query['benchmark']['isMultiKey'] == TRUE) ? 'Yes' : 'No';
+					echo '</b> &middot; Key Used: <b>'.$query['benchmark']['cursor'].'</b> &middot;  
+						Speed: <b>'.$query['benchmark']['millis'].' millis</b> 
+						Rows: <b>'.$query['benchmark']['nscannedObjects'].'</b>
+					</em>';
 			echo '</td></tr>';
 			if($class == '') $class = 'alt';
 			else $class = '';
