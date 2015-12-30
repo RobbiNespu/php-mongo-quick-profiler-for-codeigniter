@@ -1,3 +1,10 @@
+###Update : Added codes to profile MongoDB. 
+You can profile not only mySQL queries but also quries from MongoDB as well in this profiler. 
+To activate MongoDB profilling just use my [MongoDB library for Codeigniter](https://github.com/intekhabrizvi/Codeigniter-mongo-library)
+
+###Snapshot
+![Image of profiller](http://intekhabrizvi.github.io/profiller.png)
+
 So the amazing guys at Particletree built this awesome php profiler and I 
 thought I would share my mods of integrating it into CI.  My code is a bit of a
 hack job but you should get the idea.  Start by checking out the 
@@ -5,7 +12,7 @@ Particletree blog post at [http://particletree.com/features/php-quick-profiler/]
 Reading through that will give you an idea of what the profiler can accomplish 
 and how to log to its console.
 
-Both the original and my code is released under Creative Commons Attribution 
+The original, [danmorin](https://github.com/danmorin/php-quick-profiler-for-codeigniter) and [my codes](https://github.com/intekhabrizvi/php-mongo-quick-profiler-for-codeigniter) are released under Creative Commons Attribution 
 3.0 License.
 
 ### Install
